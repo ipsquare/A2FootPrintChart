@@ -76,7 +76,7 @@ namespace NinjaTrader.NinjaScript.Indicators.A2
 		private bool setChartProperties = true;
 		private string displayName = null;
 		FootPrintBarEnum footPrintBarType = FootPrintBarEnum.BidAsk;
-		FootPrintBarColorEnum footPrintBarColor = FootPrintBarColorEnum.Saturation;
+		FootPrintBarColorEnum footPrintBarColor = FootPrintBarColorEnum.VolumeBar;
 		ClosePriceEnum closePriceIndicator = ClosePriceEnum.TextColor;
 		HighestVolumeEnum highestVolumeIndicator = HighestVolumeEnum.Rectangle;
 		NinjaTrader.Gui.Tools.SimpleFont textFont = new NinjaTrader.Gui.Tools.SimpleFont("Consolas", 12);
@@ -273,16 +273,16 @@ namespace NinjaTrader.NinjaScript.Indicators.A2
 				BarDeltaDownColor 					= Brushes.Pink;
 				BarDeltaUpColor 					= Brushes.LightGreen;
 				SessionDeltaDownColor 				= Brushes.Tomato;
-				SessionDeltaUpColor 				= Brushes.LimeGreen;
+				SessionDeltaUpColor 				= Brushes.Teal;
 				FooterFontColor 					= Brushes.Black;
-				BarVolumeBackgroundColor			= Brushes.Transparent; // Brushes.LightBlue;
+				BarVolumeBackgroundColor			= Brushes.White; // Brushes.LightBlue;
 				SessionVolumeBackgroundColor		= Brushes.Transparent; // Brushes.DodgerBlue;
-				FootBrintParClosePriceColor		 	= Brushes.Gold;
+				FootBrintParClosePriceColor		 	= Brushes.DarkBlue; // Brushes.Gold;
 				FootBrintParHighestVolumeColor 		= Brushes.LawnGreen;
 	            FootBrintParHighestDeltaColor 		= Brushes.Magenta;
-				FootBrintParTextColor 				= Brushes.Black;
-				FootPrintBarUpColor 				= Brushes.LimeGreen;
-				FootPrintBarDownColor 				= Brushes.Red;
+				FootBrintParTextColor 				= Brushes.Yellow; // Brushes.Black;
+				FootPrintBarUpColor 				= Brushes.Teal; // Brushes.LimeGreen;
+				FootPrintBarDownColor 				= Brushes.RosyBrown; // Brushes.Red;
 
 				// current price line
 				LineSpreadColor						= Brushes.Black;
@@ -292,7 +292,7 @@ namespace NinjaTrader.NinjaScript.Indicators.A2
 				LineWidth							= 2;
 
 				// default boolean values
-				ShowCurrentPrice			= false;
+				ShowCurrentPrice			= true;
 				ShowFooter 					= true;
 				ShowCandleStickBars 		= true;
 				ShowBodyBar					= false;
@@ -822,22 +822,27 @@ namespace NinjaTrader.NinjaScript.Indicators.A2
 					else
 						deltaColor = BarDeltaDownColor.ToDxBrush(RenderTarget);
 
+					float xBar = chartControl.GetXByBarIndex(ChartBars, chartBarIndex - 1) + (float)(chartControl.BarWidth+4 );
+
 					// HELLO
 					if (totalDelta > 0 && barOpenPrice > barClosePrice)
 					{
 						deltaColor = Brushes.Blue.ToDxBrush(RenderTarget);
-//Draw.Text(this, "pbt" + Time[0].ToString(), "HELLO" , 1, Low[0] - TickSize * 2, ChartControl.Properties.ChartText);
-// Draw.Diamond(this, "pbd" + "HELLO" + "legCount", true, Time[0], High[0] + TickSize * 2, Brushes.Red);
-// Draw.Diamond(this, "MyDiamond" + CurrentBar, true, 0, High[0] + 2 * TickSize, Brushes.Blue);
-						Print("footPrint divergence: Trend changing pending context! 1 at " + Time[0].Hour + ":" + Time[0].Minute + ":" + Time[0].Second + " - " + totalDelta.ToString() + "" + Open[0] + " > " +  Close[0]);
+		                // PlaySound(NinjaTrader.Core.Globals.InstallDir + @"\sounds\alert4.wav");
+						// if (xBar > Count * 0.5)
+						Print("FP divergence: Trend to change pending context! 1 " + xBar.ToString() + "/" + Count.ToString() + " at " + Time[0].Hour + ":" + Time[0].Minute + ":" + Time[0].Second + " - " + totalDelta.ToString() + "" + Open[0] + " > " +  Close[0]);
 					}
 					else if (totalDelta < 0 && barOpenPrice < barClosePrice)
 					{
 						deltaColor = Brushes.Yellow.ToDxBrush(RenderTarget);
-						Print("footPrint divergence: Trend changing pending context! 2 at " + Time[0].Hour + ":" + Time[0].Minute + ":" + Time[0].Second + CurrentBar.ToString() + " - " + totalDelta.ToString() + "; " + Open[0] + " < " +  Close[0]);
+		                // PlaySound(NinjaTrader.Core.Globals.InstallDir + @"\sounds\alert2.wav");
+						if (xBar > Count * 0.5)
+						Print("FP divergence: Trend to change pending context! 2 " + xBar.ToString() + "/" + Count.ToString() + " at " + Time[0].Hour + ":" + Time[0].Minute + ":" + Time[0].Second + " - " + totalDelta.ToString() + "" + Open[0] + " > " +  Close[0]);
+					} else if (barOpenPrice == barClosePrice)
+					{
+						deltaColor = Brushes.White.ToDxBrush(RenderTarget);
 					}
 
-					float xBar = chartControl.GetXByBarIndex(ChartBars, chartBarIndex - 1) + (float)(chartControl.BarWidth+4 );
 
 					RenderTarget.FillRectangle(new RectangleF(xBar, (float)(ChartPanel.H - 57), (float)(chartControl.BarWidth * 2), (float)rectangleOffset), deltaColor);
 
@@ -849,16 +854,16 @@ namespace NinjaTrader.NinjaScript.Indicators.A2
 				#endregion
 
 				#region Session delta Footer
-				if (ShowFooter) {
+				if (ShowFooter && SessionDeltaUpColor != Brushes.Transparent) {
 					SharpDX.Direct2D1.Brush deltaColor;
 
+					float xBar = chartControl.GetXByBarIndex(ChartBars, chartBarIndex-1) + (float)(chartControl.BarWidth+4);
+
 					// set the session delta background color
-					if (sessionDelta > 0)
+					if (FootprintBars[chartBarIndex].SessionDelta > 0)
 						deltaColor = SessionDeltaUpColor.ToDxBrush(RenderTarget);
 					else
 						deltaColor = SessionDeltaDownColor.ToDxBrush(RenderTarget);
-
-					float xBar = chartControl.GetXByBarIndex(ChartBars, chartBarIndex-1) + (float)(chartControl.BarWidth+4);
 
 					RenderTarget.FillRectangle(new RectangleF(xBar, (float)(ChartPanel.H - 42), (float)(chartControl.BarWidth * 2), (float)rectangleOffset), deltaColor);
 
@@ -1038,7 +1043,6 @@ namespace NinjaTrader.NinjaScript.Indicators.A2
 			set { highestVolumeIndicator = value; }
 		}
 
-
 		[XmlIgnore]
 		[Display(ResourceType = typeof(Custom.Resource), Name = "Highest Volume Indicator Color", Description = "Color for the high volume rectangle.", Order = 9, GroupName = "3. Candle Properties")]
 		public System.Windows.Media.Brush FootBrintParHighestVolumeColor
@@ -1107,9 +1111,6 @@ namespace NinjaTrader.NinjaScript.Indicators.A2
 		}
 
 
-
-
-
 		[XmlIgnore]
 		[Display(ResourceType = typeof(Custom.Resource), Name = "Session Delta Up Background Color", Order = 5, GroupName = "4. Footer Properties")]
 		public System.Windows.Media.Brush SessionDeltaUpColor
@@ -1157,6 +1158,13 @@ namespace NinjaTrader.NinjaScript.Indicators.A2
 					get { return Serialize.BrushToString(SessionVolumeBackgroundColor); }
 		   			set { SessionVolumeBackgroundColor = Serialize.StringToBrush(value); }
 				}
+
+				// HELLO
+				// [Range(1, int.MaxValue), NinjaScriptProperty]
+				// [Display(ResourceType = typeof(Custom.Resource), Name = "Delta Average Period", GroupName = "4. Footer Properties", Order = 9)]
+				// public int Period
+				// { get; set; }
+
 				#endregion
 
 				#region PriceLine
