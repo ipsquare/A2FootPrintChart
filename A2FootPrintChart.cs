@@ -830,14 +830,14 @@ namespace NinjaTrader.NinjaScript.Indicators.A2
 						deltaColor = Brushes.Blue.ToDxBrush(RenderTarget);
 		                // PlaySound(NinjaTrader.Core.Globals.InstallDir + @"\sounds\alert4.wav");
 						// if (xBar > Count * 0.5)
-						Print("FP divergence: Trend to change pending context! 1 " + xBar.ToString() + "/" + Count.ToString() + " at " + Time[0].Hour + ":" + Time[0].Minute + ":" + Time[0].Second + " - " + totalDelta.ToString() + "" + Open[0] + " > " +  Close[0]);
+						// Print("FP divergence: Trend to change pending context! 1 " + xBar.ToString() + "/" + Count.ToString() + " at " + Time[0].Hour + ":" + Time[0].Minute + ":" + Time[0].Second + " - " + totalDelta.ToString() + "" + Open[0] + " > " +  Close[0]);
 					}
 					else if (totalDelta < 0 && barOpenPrice < barClosePrice)
 					{
 						deltaColor = Brushes.Yellow.ToDxBrush(RenderTarget);
 		                // PlaySound(NinjaTrader.Core.Globals.InstallDir + @"\sounds\alert2.wav");
-						if (xBar > Count * 0.5)
-						Print("FP divergence: Trend to change pending context! 2 " + xBar.ToString() + "/" + Count.ToString() + " at " + Time[0].Hour + ":" + Time[0].Minute + ":" + Time[0].Second + " - " + totalDelta.ToString() + "" + Open[0] + " > " +  Close[0]);
+						// if (xBar > Count * 0.5)
+						// Print("FP divergence: Trend to change pending context! 2 " + xBar.ToString() + "/" + Count.ToString() + " at " + Time[0].Hour + ":" + Time[0].Minute + ":" + Time[0].Second + " - " + totalDelta.ToString() + "" + Open[0] + " > " +  Close[0]);
 					} else if (barOpenPrice == barClosePrice)
 					{
 						deltaColor = Brushes.White.ToDxBrush(RenderTarget);
